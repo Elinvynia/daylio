@@ -1,0 +1,17 @@
+[package]
+name = "daylio"
+description = "A simple Daylio diary parsing and utility library."
+documentation = "https://docs.rs/daylio"
+homepage = "https://github.com/Elinvynia/daylio"
+repository = "https://github.com/Elinvynia/daylio.git"
+keywords = ["daylio", "mood", "diary", "parser"]
+authors = ["Elinvynia <59487684+Elinvynia@users.noreply.github.com>"]
+readme = "README.md"
+license = "MIT/Apache-2.0"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+chrono = "0.4"
+csv = "1.1"
+serde = { version = "1.0", features = ["derive"] }
