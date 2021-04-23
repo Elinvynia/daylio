@@ -33,7 +33,8 @@ pub use parse::Entry;
 use parse::Row;
 
 use chrono::prelude::*;
-use csv::ReaderBuilder;
+use csv::{Reader, ReaderBuilder};
+use std::io::Read;
 use std::path::Path;
 
 /// Parse a `.csv` file into Daylio diary entries using the default [`MoodConfig`].
@@ -42,9 +43,25 @@ pub fn parse<P: AsRef<Path>>(path: P) -> Result<Vec<Entry>, DaylioError> {
     parse_with_config(path, config)
 }
 
+/// Parse already loaded data into Daylio diary entries using the default [`MoodConfig`].
+pub fn parse_data<R: Read>(reader: R) -> Result<Vec<Entry>, DaylioError> {
+    let config = MoodConfig::default();
+    parse_data_with_config(reader, config)
+}
+
 /// Parse a `.csv` file into Daylio diary entries using your custom [`MoodConfig`].
 pub fn parse_with_config<P: AsRef<Path>>(path: P, config: MoodConfig) -> Result<Vec<Entry>, DaylioError> {
     let reader = ReaderBuilder::new().delimiter(b',').quote(b'"').from_path(path)?;
+    parse_impl(reader, config)
+}
+
+/// Parse already loaded data into Daylio diary entries using your custom [`MoodConfig`].
+pub fn parse_data_with_config<R: Read>(reader: R, config: MoodConfig) -> Result<Vec<Entry>, DaylioError> {
+    let reader = ReaderBuilder::new().delimiter(b',').quote(b'"').from_reader(reader);
+    parse_impl(reader, config)
+}
+
+fn parse_impl(reader: Reader<impl Read>, config: MoodConfig) -> Result<Vec<Entry>, DaylioError> {
     let mut entries = vec![];
 
     for row in reader.into_deserialize() {
